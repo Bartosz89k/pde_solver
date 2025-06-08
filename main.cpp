@@ -7,13 +7,32 @@ const int win_size = 1024; //800;
 void draw_nodes();
 
 cv::Mat canvas(win_size, win_size, CV_8UC3, cv::Scalar(255, 255, 255));
+
 struct Node {
     cv::Point2f pos;
     bool isActive;
     Node(float x, float y) : pos(x, y), isActive(true) {}
 };
 
+struct Beam {
+    Nodee* start;
+    Nodee* end;
+    float k;
+    float length;
+    Beam(Nodee* s, Nodee* e, float springConstant)
+        : start(s), end(e), k(springConstant) {
+        length = cv::norm(s->pos - e->pos);
+    }
+
+    float getForce() {
+        float currentLength = cv::norm(start->pos - end->pos);
+        float stretch = currentLength - length;
+        return k * stretch;
+    }
+};
+
 std::vector<Node> nodes;
+std::vector<Beam> beams;
 
 void draw_sim() {
     draw_nodes();
